@@ -1,18 +1,14 @@
 import './sass/main.scss';
-import NewsImages from './js/fetchImages';
-import cardsTemp from './templates/cards.hbs';
-import SimpleLightbox from 'simplelightbox';
-import Notiflix from 'notiflix';
-import LoadMoreBtn from './js/load-more-btn';
-import { scroll } from './js/scrollBy';
 import './css/style.css';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-const refs = {
-    searchForm: document.querySelector('#search-form'),
-    galleryContainer: document.querySelector('.gallery'),
-    imgCardLink: document.querySelector('.gallery'),
-};
+import SimpleLightbox from 'simplelightbox';
+import Notiflix from 'notiflix';
+import NewsImages from './js/fetchImages';
+import LoadMoreBtn from './js/load-more-btn';
+import cardsTemp from './templates/cards.hbs';
+import getRefs from './js/get-refs';
+import { scroll } from './js/scrollBy';
 
 Notiflix.Notify.init({
     width: '380px',
@@ -23,12 +19,14 @@ Notiflix.Notify.init({
     timeout: 2000,
 })
 
-const loadMoreBtn = new LoadMoreBtn({selector: '.load-more', hidden: true});
 const newsImages = new NewsImages();
+const refs = getRefs();
+const loadMoreBtn = new LoadMoreBtn({selector: '.load-more', hidden: true});
 
 refs.searchForm.addEventListener('submit', onSearch);
 refs.imgCardLink.addEventListener('click', openModalImg);
 loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
+
 const modalWindow = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionType: 'alt',
@@ -59,10 +57,9 @@ async function fetchArticles() {
     try {        
         loadMoreBtn.disabled();        
         const hits = await newsImages.fetchArticles();
-        const append = await appendCardsMarkup(hits);
-        loadMoreBtn.enable();
         countOfImages();
-        scroll();
+        const append = await appendCardsMarkup(hits);
+        
          if (hits.length === 0) {
             loadMoreBtn.hide();
             Notiflix.Notify.failure(
@@ -70,25 +67,29 @@ async function fetchArticles() {
             );
              gallery.innerHTML = '';
             
-        };
+         } else if (hits.length <= 2) {
+             loadMoreBtn.hide();
+        }
             modalWindow.refresh();
        
 
         if (hits.length < NewsImages.perPage) {
             loadMoreBtn.hide();
         }
+
+        loadMoreBtn.enable();
+        scroll();
         
-    } catch (error) {
-        Notiflix.Notify.failure('Warning! Try again!')
-    }
+    } catch (error) {}
 }
 
 async function onLoadMore() {
     loadMoreBtn.disabled();   
     const hits = await newsImages.fetchArticles();
+    countOfImages();
     const append = await appendCardsMarkup(hits);
     loadMoreBtn.enable();
-    countOfImages();
+    
     modalWindow.refresh();
     scroll();
     
@@ -107,6 +108,7 @@ function openModalImg(e) {
 
 function clearGalleryContainer() {
     refs.galleryContainer.innerHTML = '';
+    
 };
 
 function countOfImages() {
@@ -118,18 +120,9 @@ function countOfImages() {
     Notiflix.Notify.success(`Hooray! We found ${totalImages} images.`);
   }
 
-  if (currentImages > totalImages && totalImages !== 0 && totalImages > quantityImagesOnPage || currentImages > totalImages) {
-    loadMoreBtn.hide();
+  if (currentImages > totalImages && totalImages !== 0 && totalImages > quantityImagesOnPage) {
+      loadMoreBtn.hide();
     Notiflix.Notify.info(
-      `We're sorry, but you've reached the end of search ${totalImages} results`,
-    );
-  }
-
-    // if (currentImages > totalImages) {
-    //     loadMoreBtn.hide();
-    // Notiflix.Notify.info(
-    //   `We're sorry, but you've reached the end of search ${totalImages} results`,
-    // );
-    // }
-    
-}
+      `We're sorry, but you've reached the end of search ${totalImages} results`);      
+  }     
+};
