@@ -8,7 +8,7 @@ export default class NewsImages{
         this.searchQuery = ' ';
         this.page = 1;
         this.totalImages;
-        this.perPage = 40;
+        this.perPage = 20;
      };
     
     async fetchArticles() {

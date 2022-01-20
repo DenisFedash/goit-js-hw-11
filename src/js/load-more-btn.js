@@ -1,38 +1,10 @@
-// const refs = {
-//     loadMoreBtn: document.querySelector('.load-more'),
-//     loadMoreBtnLabel: document.querySelector('.label'),
-// }
-    
-// const loadMoreBtn = {
-//     enable() {
-//         refs.loadMoreBtn.disabled = false;
-//         refs.loadMoreBtnLabel.textContent = 'Load more...';
-//     },
-//     disable() {
-//         refs.loadMoreBtn.disabled = true;
-//         refs.loadMoreBtnLabel.textContent = 'Waiting...';
-//     },
-//     show() {
-//         refs.loadMoreBtn.classList.remove('is-hidden');
-//     },
-//     hide() {
-//         refs.loadMoreBtn.classList.add('is-hidden');
-//     }
-// }
-
-// export default loadMoreBtn;
-
-
-
-
-
 export default class LoadMoreBtn {
   constructor({ selector, hidden = false }) {
     this.refs = this.getRefs(selector);
     hidden && this.hide();
   }
 
-  getRefs(selector) {
+    getRefs(selector) {
     const refs = {};
 
     refs.button = document.querySelector(selector);
@@ -41,12 +13,12 @@ export default class LoadMoreBtn {
     return refs;
   }
 
-  enable() {
+    enable() {
     this.refs.button.disabled = false;
     this.refs.label.textContent = 'Load more...';
   }
 
-  disabled() {
+    disabled() {
     this.refs.button.disabled = true;
     this.refs.label.textContent = 'Waiting...';
   }
@@ -55,7 +27,7 @@ export default class LoadMoreBtn {
     this.refs.button.classList.add('is-hidden');
   }
 
-  show() {
+    show() {
     this.refs.button.classList.remove('is-hidden');
   }
 }
